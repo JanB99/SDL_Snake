@@ -30,7 +30,7 @@ typedef struct {
 	
 } Textures;
 
-const int FPS = 8, WIDTH = 800, HEIGHT = 800, RES = 50;
+const int FPS = 10, WIDTH = 800, HEIGHT = 800, RES = 50;
 
 void init(const char* title, int width, int height, int flags, Game &game);
 void render(SDL_Renderer* renderer, Snake snake, Vec2 apple, Textures gameTexs, TTF_Font* font);

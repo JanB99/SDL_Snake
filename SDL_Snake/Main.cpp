@@ -46,6 +46,5 @@ int main(int argc, char* argv[]) {
 	}
 
 	clean(game);
-
 	return 0;
 }
