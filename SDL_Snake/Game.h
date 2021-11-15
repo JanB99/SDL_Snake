@@ -3,6 +3,7 @@
 #include <vector>
 #include <random>
 #include "SDL.h"
+#include "Texture.h"
 
 typedef struct {
 	SDL_Window *window;
@@ -25,12 +26,14 @@ typedef struct {
 	SDL_Texture* headTex;
 	SDL_Texture* bodyTex;
 	SDL_Texture* tailTex;
+	SDL_Texture* grassTex;
+	
 } Textures;
 
 const int FPS = 8, WIDTH = 800, HEIGHT = 800, RES = 50;
 
 void init(const char* title, int width, int height, int flags, Game &game);
-void render(SDL_Renderer* renderer, Snake snake, Vec2 apple, Textures gameTexs);
+void render(SDL_Renderer* renderer, Snake snake, Vec2 apple, Textures gameTexs, TTF_Font* font);
 void update(Snake& snake, Vec2& apple);
 void handleEvents(Game& game, Snake& snake);
 void clean(Game game);

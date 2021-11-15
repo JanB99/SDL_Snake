@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "Math.h"
+#include <string>
 
 void init(const char* title, int width, int height, int flags, Game& game) {
 	if (SDL_Init(SDL_INIT_EVERYTHING)) {
@@ -10,7 +11,7 @@ void init(const char* title, int width, int height, int flags, Game& game) {
 	game.isRunning = true;
 }
 
-void render(SDL_Renderer* renderer, Snake snake, Vec2 apple, Textures gameTexs) {
+void render(SDL_Renderer* renderer, Snake snake, Vec2 apple, Textures gameTexs, TTF_Font* font) {
 	SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
 	SDL_RenderClear(renderer);
 
@@ -20,8 +21,7 @@ void render(SDL_Renderer* renderer, Snake snake, Vec2 apple, Textures gameTexs) 
 	for (int x = 0; x < WIDTH / RES; x++) {
 		for (int y = 0; y < HEIGHT / RES; y++) {
 			r = { x * RES, y * RES, RES, RES };
-			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-			SDL_RenderDrawRect(renderer, &r);
+			SDL_RenderCopy(renderer, gameTexs.grassTex, NULL, &r);
 		}
 	}
 
@@ -35,7 +35,7 @@ void render(SDL_Renderer* renderer, Snake snake, Vec2 apple, Textures gameTexs) 
 	SDL_RenderCopyEx(renderer, gameTexs.headTex, NULL, &r, angle, NULL, SDL_FLIP_NONE);
 
 	//tail
-	for (int i = 1; i < snake.tail.size(); i++) {
+	for (size_t i = 1; i < snake.tail.size(); i++) {
 		r = { snake.tail[i].pos.x * RES, snake.tail[i].pos.y * RES, RES, RES };
 		angle = atan2(snake.tail[i].dir.y, snake.tail[i].dir.x) * (180 / M_PI) + 90;
 
@@ -46,6 +46,13 @@ void render(SDL_Renderer* renderer, Snake snake, Vec2 apple, Textures gameTexs) 
 			SDL_RenderCopyEx(renderer, gameTexs.bodyTex, NULL, &r, angle, NULL, SDL_FLIP_NONE);
 		}
 	}
+
+	std::string score = "Score: " + std::to_string(snake.length);
+
+	SDL_Texture* scoreTex = loadTextureMessage(score.c_str(), font, { 0, 50, 0 }, renderer);
+	r = { RES, RES, RES*3, RES };
+	SDL_RenderCopy(renderer, scoreTex, NULL, &r);
+	SDL_DestroyTexture(scoreTex);
 
 	SDL_RenderPresent(renderer);
 }
@@ -60,7 +67,7 @@ void update(Snake& snake, Vec2& apple) {
 		snake.length++;
 	}
 
-	for (int i = 1; i < snake.tail.size() - snake.length; i++) {
+	for (size_t i = 1; i < snake.tail.size() - snake.length; i++) {
 		snake.tail.erase(snake.tail.end()-1);
 	}
 
@@ -72,7 +79,7 @@ void update(Snake& snake, Vec2& apple) {
 		snake.dir = { 0, 0 };
 		snake.length = 0; 
 	}
-	for (int i = 1; i < snake.tail.size(); i++) {
+	for (size_t i = 1; i < snake.tail.size(); i++) {
 		if (snake.head.x == snake.tail[i].pos.x && snake.head.y == snake.tail[i].pos.y) {
 			snake.head = { WIDTH / 2 / RES, HEIGHT / 2 / RES };
 			snake.tail.clear();
@@ -120,7 +127,7 @@ void clean(Game game) {
 
 bool checkPos(Vec2 pos, std::vector<Body> tail) {
 	bool found = true;
-	for (int i = 0; i < tail.size(); i++) {
+	for (size_t i = 0; i < tail.size(); i++) {
 		if (pos.x == tail[i].pos.x && pos.y == tail[i].pos.y) {
 			found = false;
 		}
